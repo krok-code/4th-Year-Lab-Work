@@ -1,0 +1,13 @@
+{
+  "name": "js-hello-world",
+  "version": "1.0.0",
+  "description": "Lab 1 AI Agent Project",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "jest --runInBand"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0"
+  }
+}
