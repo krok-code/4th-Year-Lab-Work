@@ -762,8 +762,12 @@ class SecondBrainApp {
 
   // Навігація за внутрішнім посиланням [[Назва нотатки]]
   selectNoteByTitle(targetTitle) {
-    const cleanTitle = targetTitle.trim().toLowerCase();
-    const targetNote = this.notes.find(n => n.title.trim().toLowerCase() === cleanTitle);
+    if (!targetTitle) return;
+    const cleanTitle = targetTitle.replace(/&#039;|&apos;/g, "'").replace(/[’`]/g, "'").trim().toLowerCase();
+    const targetNote = this.notes.find(n => {
+      const noteTitle = n.title.replace(/&#039;|&apos;/g, "'").replace(/[’`]/g, "'").trim().toLowerCase();
+      return noteTitle === cleanTitle;
+    });
 
     if (targetNote) {
       this.selectedNoteId = targetNote.id;
@@ -789,9 +793,11 @@ class SecondBrainApp {
     let html = this.escapeHtml(text);
 
     // Заміна [[Назва нотатки|Аліас]] та [[Назва нотатки]] на клікабельні елементи
+    // Виправляємо баг з апострофом: нормалізуємо &#039; та &apos; назад у коректний апостроф
     html = html.replace(/\[\[(.*?)(?:\|(.*?))?\]\]/g, (match, title, alias) => {
-      const displayText = alias ? alias.trim() : title.trim();
-      return `<a href="#" class="wikilink" data-target="${this.escapeHtml(title.trim())}">[[${this.escapeHtml(displayText)}]]</a>`;
+      const cleanTitle = title.replace(/&#039;|&apos;/g, "'").trim();
+      const displayText = alias ? alias.replace(/&#039;|&apos;/g, "'").trim() : cleanTitle;
+      return `<a href="#" class="wikilink" data-target="${this.escapeHtml(cleanTitle)}">[[${this.escapeHtml(displayText)}]]</a>`;
     });
 
     // Заголовки: ###, ##, #
@@ -831,15 +837,14 @@ class SecondBrainApp {
     return html;
   }
 
-  // Екранування HTML
+  // Екранування HTML (безпечне для українського апострофа)
   escapeHtml(str) {
     if (!str) return "";
     return String(str)
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
+      .replace(/"/g, "&quot;");
   }
 
   // Відкриття модального вікна
