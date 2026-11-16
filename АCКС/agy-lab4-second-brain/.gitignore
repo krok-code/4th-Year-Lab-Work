@@ -1,0 +1,32 @@
+# Python cache & virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+ENV/
+build/
+dist/
+*.egg-info/
+
+# Local databases, index cache and logs
+*.sqlite
+*.sqlite3
+*.db
+*.log
+.cache/
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE & Editor artifacts
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Keep gitkeep files
+!.gitkeep
