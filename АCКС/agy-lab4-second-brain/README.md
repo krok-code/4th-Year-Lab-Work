@@ -2,6 +2,11 @@
 
 Локальна персональна база знань на базі методології **PARA**, розмітки **Markdown** із метаданими **YAML Frontmatter** та підтримкою двосторонніх зв'язків `[[Wikilinks]]`.
 
+## Як запустити застосунок
+
+Застосунок працює **100% локально та автономно без будь-яких вебсерверів чи сторонніх залежностей**.
+Просто відкрийте файл [src/index.html](file:///c:/Users/Krokodile/Desktop/4%20курс%20лабки/4th-Year-Lab-Work/АCКС/agy-lab4-second-brain/src/index.html) у будь-якому браузері (Chrome, Edge, Firefox, Brave) подвійним кліком.
+
 ## Структура репозиторію
 
 - [notes/Inbox/](file:///c:/Users/Krokodile/Desktop/4%20курс%20лабки/4th-Year-Lab-Work/АCКС/agy-lab4-second-brain/notes/Inbox) — швидка фіксація вхідних думок і конспектів.

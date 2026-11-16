@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Local Second Brain</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Bar -->
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo-icon">🧠</span>
+        <div class="brand-text">
+          <h1>Second Brain</h1>
+          <span class="badge-local">Local-First PKM</span>
+        </div>
+      </div>
+
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Повнотекстовий пошук за назвою, текстом або #тегом..." autocomplete="off">
+        <button id="clearSearchBtn" class="btn-clear hidden" title="Очистити пошук">✕</button>
+      </div>
+
+      <div class="topbar-actions">
+        <input type="file" id="importFolderInput" webkitdirectory directory multiple class="hidden">
+        <input type="file" id="importFilesInput" accept=".md,.markdown" multiple class="hidden">
+        
+        <button id="importBtn" class="btn btn-secondary" title="Завантажити .md файли з папки notes/">
+          📂 Завантажити .md файли з папки notes/
+        </button>
+        <button id="newNoteBtn" class="btn btn-primary" title="Створити нову нотатку в notes/Inbox">
+          ➕ Нова нотатка
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace Layout -->
+    <main class="workspace">
+      <!-- Left Sidebar: Categories & Tags -->
+      <aside class="sidebar">
+        <section class="sidebar-section">
+          <h2 class="sidebar-title">Категорії PARA</h2>
+          <nav class="category-nav">
+            <button class="nav-item active" data-category="ALL">
+              <span class="nav-icon">📚</span>
+              <span class="nav-label">Всі нотатки</span>
+              <span class="counter" id="count-ALL">0</span>
+            </button>
+            <button class="nav-item" data-category="Inbox">
+              <span class="nav-icon">📥</span>
+              <span class="nav-label">Inbox (Вхідні)</span>
+              <span class="counter" id="count-Inbox">0</span>
+            </button>
+            <button class="nav-item" data-category="Projects">
+              <span class="nav-icon">🎯</span>
+              <span class="nav-label">Projects (Проєкти)</span>
+              <span class="counter" id="count-Projects">0</span>
+            </button>
+            <button class="nav-item" data-category="Areas">
+              <span class="nav-icon">🧭</span>
+              <span class="nav-label">Areas (Сфери)</span>
+              <span class="counter" id="count-Areas">0</span>
+            </button>
+            <button class="nav-item" data-category="Resources">
+              <span class="nav-icon">📖</span>
+              <span class="nav-label">Resources (Ресурси)</span>
+              <span class="counter" id="count-Resources">0</span>
+            </button>
+            <button class="nav-item" data-category="Archives">
+              <span class="nav-icon">📦</span>
+              <span class="nav-label">Archives (Архів)</span>
+              <span class="counter" id="count-Archives">0</span>
+            </button>
+          </nav>
+        </section>
+
+        <section class="sidebar-section">
+          <div class="sidebar-title-row">
+            <h2 class="sidebar-title">Теги</h2>
+            <button id="resetTagBtn" class="btn-text hidden">Скинути</button>
+          </div>
+          <div id="tagCloud" class="tag-cloud">
+            <!-- Dynamically populated tags -->
+          </div>
+        </section>
+
+        <footer class="sidebar-footer">
+          <button id="resetToDefaultBtn" class="btn-text" style="margin-bottom: 0.5rem; display: block; width: 100%; text-align: center;">
+            🔄 Скинути до 8 базових нотаток
+          </button>
+          <p>🔒 100% Локально • Без сторонніх API</p>
+        </footer>
+      </aside>
+
+      <!-- Center Pane: Notes List -->
+      <section class="notes-pane">
+        <div class="pane-header">
+          <div class="active-filters">
+            <span id="currentCategoryLabel" class="current-category">Всі нотатки</span>
+            <span id="activeTagBadge" class="filter-badge hidden"></span>
+          </div>
+          <div class="sort-info">
+            <span id="notesCountInfo">0 нотаток</span>
+          </div>
+        </div>
+
+        <div id="notesList" class="notes-list">
+          <!-- Dynamically populated notes cards -->
+        </div>
+
+        <!-- Empty State View -->
+        <div id="emptyState" class="empty-state hidden">
+          <div class="empty-icon">🔎</div>
+          <h3>Нічого не знайдено</h3>
+          <p id="emptyStateMsg">За вашим запитом не знайдено жодної нотатки. Спробуйте змінити пошукове слово або скинути фільтри.</p>
+          <button id="resetFiltersBtn" class="btn btn-secondary">Скинути всі фільтри</button>
+        </div>
+      </section>
+
+      <!-- Right Pane: Note Viewer / Detail -->
+      <section class="viewer-pane">
+        <div id="noteViewer" class="note-viewer">
+          <div class="viewer-header">
+            <div class="viewer-meta-row">
+              <span id="viewCategoryBadge" class="badge-category">Category</span>
+              <span id="viewStatusBadge" class="badge-status">Status</span>
+              <span id="viewTypeBadge" class="badge-type">Type</span>
+              <span id="viewDate" class="meta-date">Date</span>
+            </div>
+            <h2 id="viewTitle" class="viewer-title">Оберіть нотатку для перегляду</h2>
+            <div id="viewTags" class="viewer-tags"></div>
+            <div id="viewSource" class="viewer-source"></div>
+          </div>
+
+          <article id="viewContent" class="markdown-body">
+            <!-- Rendered Markdown body -->
+          </article>
+
+          <!-- Backlinks Section -->
+          <section id="backlinksSection" class="backlinks-section">
+            <h3 class="backlinks-title">Зворотні посилання (Backlinks)</h3>
+            <div id="backlinksList" class="backlinks-list">
+              <!-- Linked references -->
+            </div>
+          </section>
+        </div>
+
+        <!-- Placeholder when no note is selected -->
+        <div id="noNoteSelected" class="no-selection-placeholder">
+          <div class="placeholder-icon">📝</div>
+          <h3>Оберіть нотатку зі списку</h3>
+          <p>Або створіть нову нотатку у папку <code>notes/Inbox</code> за допомогою кнопки вгорі.</p>
+        </div>
+      </section>
+    </main>
+
+    <!-- Modal for Creating New Note in Inbox -->
+    <div id="newNoteModal" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <header class="modal-header">
+          <h3>➕ Нова нотатка (в notes/Inbox)</h3>
+          <button id="closeModalBtn" class="btn-icon">✕</button>
+        </header>
+
+        <form id="newNoteForm" class="modal-form">
+          <div class="form-group">
+            <label for="noteTitleInput">Назва нотатки *</label>
+            <input type="text" id="noteTitleInput" required placeholder="Наприклад: Нова архітектура нейроприскорювача">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="noteCategorySelect">Категорія</label>
+              <select id="noteCategorySelect">
+                <option value="Inbox" selected>Inbox (Вхідні)</option>
+                <option value="Projects">Projects (Проєкти)</option>
+                <option value="Areas">Areas (Сфери)</option>
+                <option value="Resources">Resources (Ресурси)</option>
+                <option value="Archives">Archives (Архів)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="noteTypeSelect">Тип (type)</label>
+              <select id="noteTypeSelect">
+                <option value="fleeting" selected>fleeting (чернетка)</option>
+                <option value="project">project (проєкт)</option>
+                <option value="area">area (сфера)</option>
+                <option value="resource">resource (ресурс)</option>
+                <option value="lecture">lecture (лекція)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="noteStatusSelect">Статус (status)</label>
+              <select id="noteStatusSelect">
+                <option value="draft" selected>draft</option>
+                <option value="active">active</option>
+                <option value="completed">completed</option>
+                <option value="archived">archived</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="noteTagsInput">Теги (через кому)</label>
+            <input type="text" id="noteTagsInput" placeholder="штучний-інтелект, архітектура, linux">
+          </div>
+
+          <div class="form-group">
+            <label for="noteSourceInput">Джерело (source)</label>
+            <input type="text" id="noteSourceInput" placeholder="лекція, посилання на статтю або книга">
+          </div>
+
+          <div class="form-group">
+            <label for="noteSummaryInput">Короткий зміст (## Короткий зміст)</label>
+            <textarea id="noteSummaryInput" rows="2" placeholder="Лаконічний опис основної ідеї..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="notePointsInput">Основні твердження (## Основні твердження, кожне з нового рядка)</label>
+            <textarea id="notePointsInput" rows="3" placeholder="- Перше спостереження або теза&#10;- Друга важлива теза"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="noteLinksInput">Пов'язані нотатки (## Пов'язані нотатки, наприклад: [[Назва нотатки]])</label>
+            <input type="text" id="noteLinksInput" placeholder="[[Ієрархія пам'яті та когерентність кешів CPU]], [[MOC - Комп'ютерні системи, Хмари та Штучний Інтелект]]">
+          </div>
+
+          <footer class="modal-footer">
+            <button type="button" id="cancelModalBtn" class="btn btn-secondary">Скасувати</button>
+            <button type="submit" class="btn btn-primary">Зберегти в браузері</button>
+            <button type="button" id="downloadMdBtn" class="btn btn-outline" title="Завантажити готовий .md файл для notes/Inbox">
+              💾 Зберегти як .md
+            </button>
+          </footer>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
