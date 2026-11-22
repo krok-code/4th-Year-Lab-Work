@@ -1,0 +1,8 @@
+:name: LR7 — опрацювання сигналів на Cortex-M4F
+using sysbus
+mach create "stm32f4"
+machine LoadPlatformDescription @stm32f407_min.repl
+sysbus.usart2 CreateFileBackend @uart.txt true
+sysbus LoadELF @lr7.elf
+cpu AddHook `sysbus GetSymbolAddress "mark_begin"` "self.WarningLog('MB id=%d ins=%d' % (self.GetRegisterUnsafe(0).RawValue, self.ExecutedInstructions))"
+cpu AddHook `sysbus GetSymbolAddress "mark_end"` "self.WarningLog('ME id=%d ins=%d' % (self.GetRegisterUnsafe(0).RawValue, self.ExecutedInstructions))"
